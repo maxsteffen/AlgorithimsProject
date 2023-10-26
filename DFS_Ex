@@ -1,0 +1,23 @@
+    def solve(self):
+        stackFrontier = []
+        explored = set()
+        solFound = False
+        S0 = Node(self.s0, None, None, 0)
+        stackFrontier.append(S0)
+
+        while not solFound:
+            if len(stackFrontier) == 0:
+                raise Exception("Error: No Solution Found")
+
+            currNode = stackFrontier.pop()
+            if self.terminal(currNode.state):
+                solFound = True
+                return currNode
+            explored.add(currNode.state)
+
+            for i in self.actions(currNode.state):
+                resultState = self.result(currNode.state, i)
+                resultNode = Node(resultState, currNode, i, 1)  # Path cost is 0 for DFS
+                if resultNode.state not in explored and resultNode not in stackFrontier:
+                    stackFrontier.append(resultNode)
+            self.nodesExplored = len(explored)

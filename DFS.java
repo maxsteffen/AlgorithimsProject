@@ -1,3 +1,7 @@
+// DFS Algorithm
+// COSC 3100
+// Group #2 - Tania Mishra
+
 package project;
 
 import java.util.ArrayList;

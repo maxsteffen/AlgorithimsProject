@@ -4,6 +4,7 @@
 
 package project;
 
+import java.security.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Stack;
@@ -11,16 +12,6 @@ import java.util.Stack;
 public class DFS {
 	
 	public static int[][] possibleActions = {{0,1}, {1,0}, {0,-1}, {-1,0}};
-
-
-	public static void printMaze(char[][] maze) {
-		for (int i = 0; i < 12; i++) {
-			for (int j = 0; j < 12; j++) {
-				System.out.print(maze[i][j] + " ");
-			}
-			System.out.println();
-		}
-	}
 	
 	public static boolean isExplored(ArrayList<int[]> explored, int[] currentSpot) {
 		boolean found = false;
@@ -50,42 +41,36 @@ public class DFS {
 		return newSpot;
 	}
 	
-	public static void dfs(char[][] maze, int mazeSize, int[] start) {
+	public static int dfs(char[][] maze, int mazeSize, int[] start, int[][] traversedMaze) {
 		Stack<int[]> stack = new Stack<int[]>();
 		ArrayList<int[]> explored = new ArrayList<int[]>();
 		int numExploredStates = 0;
-		
-		printMaze(maze);
-		
+				
 		stack.push(start);
 
 		while (!stack.isEmpty()) {
 			int[] currentSpot = stack.pop();
 			numExploredStates++;
-			System.out.println("current spot" + Arrays.toString(currentSpot));
 			if (!isExplored(explored, currentSpot)) {
-				System.out.println("NOT EXPLORED");
 				if (isExit(maze, currentSpot)) {
-					System.out.println("AT EXIT");
+					traversedMaze[currentSpot[0]][currentSpot[1]] = numExploredStates;
 					break;
 				}
 				for (int i = 0; i < possibleActions.length; i++) {
 					int[] newSpot = nextCoordinate(currentSpot, possibleActions[i]);
-					System.out.println(Arrays.toString(newSpot));
 					
 					if (newSpot[0] < maze.length && newSpot[1] < maze[0].length) {		// if new spot is in maze boundaries
-						System.out.println("in boundaries");
 						if (maze[newSpot[0]][newSpot[1]] != '%' && !isExplored(explored, newSpot)) {						// if new spot is not a wall and not yet explored
-							System.out.println("not wall");
 							stack.add(newSpot);
 						}
 					}
 				}
 				explored.add(currentSpot);
+				traversedMaze[currentSpot[0]][currentSpot[1]] = numExploredStates;
 			}
 		}
 		
-		System.out.println("Number of explored states: " + numExploredStates);
+		return numExploredStates;
 		
 		
 	}
@@ -105,14 +90,59 @@ public class DFS {
 			{'%', ' ', '%', '%', '%', ' ', '%', '%', '%', '%', '%', '%'},
 			{'%', '%', '%', '%', '%', 'E', '%', '%', '%', '%', '%', '%'}
 		};
+		int[][] traversedMaze = {
+				{0,0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,0,0},
+			};
 
 		
 		int mazeSize = maze.length * maze[0].length;
 		int[] start = {1,11};
-		//int[] end = {11, 5};
+
+		System.out.println("Original maze:");
+		for (int i = 0; i < 12; i++) {
+			for (int j = 0; j < 12; j++) {
+				System.out.print(maze[i][j] + " ");
+			}
+			System.out.println();
+		}
 		
-		dfs(maze, mazeSize, start);
+		double startTime = System.nanoTime();
+
+		int numExploredStates = dfs(maze, mazeSize, start, traversedMaze);
+		
+		long endTime   = System.nanoTime();
+		double totalTime = (endTime - startTime)/1000;
+		
+		System.out.println("Traversed maze:");
+		for (int i = 0; i < 12; i++) {
+			for (int j = 0; j < 12; j++) {
+				if (traversedMaze[i][j] < 10) {
+					System.out.print(" " + traversedMaze[i][j] + " ");
+				}
+				else {
+					System.out.print(" " + traversedMaze[i][j]);
+
+				}
+			}
+			System.out.println();
+		}
+		
+		System.out.println("Number of explored states: " + numExploredStates);
+		System.out.println("Runtime: " + totalTime + " sec");
+
+
 	}
+	
 
 }
-
